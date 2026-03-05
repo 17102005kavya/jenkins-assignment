@@ -10,7 +10,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git 'https://your-repo-url.git'
+                git 'https://github.com/17102005kavya/jenkins-assignment.git'
             }
         }
 
