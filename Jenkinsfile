@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "simple-frontend-app"
+        IMAGE_NAME = "2023bcs0082/simple-frontend-app"
         CONTAINER_NAME = "frontend-container"
     }
 
