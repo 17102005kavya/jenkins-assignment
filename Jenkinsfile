@@ -8,12 +8,7 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
-            steps {
-                git branch: 'main', url: 'https://github.com/17102005kavya/jenkins-assignment.git'
-            }
-        }
-
+     
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t $IMAGE_NAME .'
