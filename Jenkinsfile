@@ -2,31 +2,39 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "2023bcs0082/simple-frontend-app"
-        CONTAINER_NAME = "frontend-container"
+        DOCKER_IMAGE = "2023bcs0082/2023bcs0082_jenkins"
     }
 
     stages {
 
-     
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/17102005kavya/jenkins-assignment.git'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
 
-        stage('Stop Old Container') {
+        stage('Login to DockerHub') {
             steps {
-                sh '''
-                docker stop $CONTAINER_NAME || true
-                docker rm $CONTAINER_NAME || true
-                '''
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'USERNAME',
+                    passwordVariable: 'PASSWORD'
+                )]) {
+
+                    sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
+                }
             }
         }
 
-        stage('Run Container') {
+        stage('Push Image') {
             steps {
-                sh 'docker run -d -p 8080:80 --name $CONTAINER_NAME $IMAGE_NAME'
+                sh 'docker push $DOCKER_IMAGE'
             }
         }
     }
