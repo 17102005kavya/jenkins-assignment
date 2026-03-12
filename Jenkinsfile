@@ -2,39 +2,38 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "2023bcs0082/2023bcs0082_jenkins"
+        IMAGE_NAME = "2023bcs0082/23bcs82_kavya_image"
     }
 
     stages {
 
-        stage('Checkout Code') {
-    steps {
-        git branch: 'main', url: 'https://github.com/17102005kavya/jenkins-assignment.git'
-    }
-}
-
-        stage('Build Docker Image') {
+        stage('Checkout') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE .'
+                git branch: 'main', url: 'https://github.com/17102005kavya/jenkins-assignment.git'
             }
         }
 
-        stage('Login to DockerHub') {
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t $IMAGE_NAME ."
+            }
+        }
+
+        stage('Login to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub',
-                    usernameVariable: 'USERNAME',
-                    passwordVariable: 'PASSWORD'
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
                 )]) {
-
-                    sh 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
+                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                 }
             }
         }
 
-        stage('Push Image') {
+        stage('Push Docker Image') {
             steps {
-                sh 'docker push $DOCKER_IMAGE'
+                sh "docker push $IMAGE_NAME"
             }
         }
     }
