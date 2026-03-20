@@ -2,33 +2,37 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "2023bcs0082/2023bcs0082_2023bcs0082"
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials-id')
+        DOCKER_IMAGE = "2023bcs0082/2023bcs0082_2023bcs0082"
     }
 
     stages {
-
         stage('Checkout') {
             steps {
-                checkout scm
+                git 'https://github.com/17102005kavya/jenkins-assignment.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t $IMAGE_NAME ."
+                sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials-id',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                sh "docker push $IMAGE_NAME"
+                sh 'docker push $DOCKER_IMAGE'
             }
         }
     }
